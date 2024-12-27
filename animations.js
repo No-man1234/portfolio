@@ -186,13 +186,30 @@ document.addEventListener('DOMContentLoaded', function() {
         successMessage.style.display = 'none';
         errorMessage.style.display = 'none';
         
+        // Validate form
+        const name = form.querySelector('#name').value.trim();
+        const email = form.querySelector('#email').value.trim();
+        const message = form.querySelector('#message').value.trim();
+        
+        if (!name || !email || !message) {
+            errorMessage.textContent = 'Please fill in all fields';
+            errorMessage.style.display = 'block';
+            return;
+        }
+        
+        if (!isValidEmail(email)) {
+            errorMessage.textContent = 'Please enter a valid email address';
+            errorMessage.style.display = 'block';
+            return;
+        }
+        
         // Disable button and show loader
         submitButton.disabled = true;
         buttonText.style.display = 'none';
         buttonLoader.style.display = 'inline';
         
         try {
-            // Replace 'your-form-id' with your actual Formspree form ID
+            // Replace YOUR_FORM_ID with your actual Formspree form ID
             const response = await fetch('https://formspree.io/f/mnnnnzdy', {
                 method: 'POST',
                 body: new FormData(form),
@@ -203,6 +220,7 @@ document.addEventListener('DOMContentLoaded', function() {
             
             if (response.ok) {
                 // Show success message
+                successMessage.textContent = 'Message sent successfully! Thank you for getting in touch.';
                 successMessage.style.display = 'block';
                 form.reset();
                 
@@ -215,12 +233,15 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         } catch (error) {
             // Show error message
+            errorMessage.textContent = 'Failed to send message. Please try again later.';
             errorMessage.style.display = 'block';
             
             // Hide error message after 5 seconds
             setTimeout(() => {
                 errorMessage.style.display = 'none';
             }, 5000);
+            
+            console.error('Form submission error:', error);
         } finally {
             // Re-enable button and hide loader
             submitButton.disabled = false;
@@ -228,6 +249,12 @@ document.addEventListener('DOMContentLoaded', function() {
             buttonLoader.style.display = 'none';
         }
     });
+    
+    // Email validation helper function
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
 });
 // Parallax Effect for Background
 window.addEventListener('scroll', () => {
