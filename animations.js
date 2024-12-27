@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const errorMessage = document.getElementById('errorMessage');
 
     // Add the form action and method directly to the form element
-    form.setAttribute('action', 'https://formspree.io/f/YOUR_FORM_ID');
+    form.setAttribute('action', 'https://formspree.io/f/mnnnnzdy');
     form.setAttribute('method', 'POST');
     
     form.addEventListener('submit', function(e) {
