@@ -170,7 +170,65 @@ document.querySelectorAll('nav a').forEach(anchor => {
         });
     });
 });
-
+// get in touch message form
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contactForm');
+    const submitButton = document.getElementById('submitButton');
+    const buttonText = document.getElementById('buttonText');
+    const buttonLoader = document.getElementById('buttonLoader');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+    
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        // Reset messages
+        successMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+        
+        // Disable button and show loader
+        submitButton.disabled = true;
+        buttonText.style.display = 'none';
+        buttonLoader.style.display = 'inline';
+        
+        try {
+            // Replace 'your-form-id' with your actual Formspree form ID
+            const response = await fetch('https://formspree.io/f/mnnnnzdy', {
+                method: 'POST',
+                body: new FormData(form),
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+            
+            if (response.ok) {
+                // Show success message
+                successMessage.style.display = 'block';
+                form.reset();
+                
+                // Hide success message after 5 seconds
+                setTimeout(() => {
+                    successMessage.style.display = 'none';
+                }, 5000);
+            } else {
+                throw new Error('Failed to send message');
+            }
+        } catch (error) {
+            // Show error message
+            errorMessage.style.display = 'block';
+            
+            // Hide error message after 5 seconds
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        } finally {
+            // Re-enable button and hide loader
+            submitButton.disabled = false;
+            buttonText.style.display = 'inline';
+            buttonLoader.style.display = 'none';
+        }
+    });
+});
 // Parallax Effect for Background
 window.addEventListener('scroll', () => {
     const parallaxElements = document.querySelectorAll('.parallax');
