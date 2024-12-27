@@ -171,63 +171,58 @@ document.querySelectorAll('nav a').forEach(anchor => {
     });
 });
 // get in touch message form
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('contactForm');
     const submitButton = document.getElementById('submitButton');
     const buttonText = document.getElementById('buttonText');
     const buttonLoader = document.getElementById('buttonLoader');
     const successMessage = document.getElementById('successMessage');
     const errorMessage = document.getElementById('errorMessage');
-
-    // Add the form action and method directly to the form element
-    form.setAttribute('action', 'https://formspree.io/f/mnnnnzdy');
-    form.setAttribute('method', 'POST');
-    
-    form.addEventListener('submit', function(e) {
-        e.preventDefault(); // Prevent default form submission
-        
-        // Reset messages
-        successMessage.style.display = 'none';
-        errorMessage.style.display = 'none';
-        
-        // Get form data
-        const formData = new FormData(form);
-        
-        // Disable button and show loader
-        submitButton.disabled = true;
-        buttonText.style.display = 'none';
-        buttonLoader.style.display = 'inline';
-        
-        // Send form data to Formspree
-        fetch(form.action, {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'Accept': 'application/json'
-            }
-        })
+  
+    form.addEventListener('submit', (event) => {
+      event.preventDefault(); // Prevent default form submission
+  
+      // Reset messages
+      successMessage.style.display = 'none';
+      errorMessage.style.display = 'none';
+  
+      // Get form data
+      const formData = new FormData(form);
+  
+      // Disable button and show loader
+      submitButton.disabled = true;
+      buttonText.style.display = 'none';
+      buttonLoader.style.display = 'inline';
+  
+      // Send form data to Formspree
+      fetch('https://formspree.io/f/mnnnnzdy', { // Replace with your actual Formspree endpoint
+        method: 'POST',
+        body: formData,
+      })
         .then(response => {
-            if (response.ok) {
-                // Success
-                successMessage.style.display = 'block';
-                form.reset();
-            } else {
-                // Error
-                throw new Error('Form submission failed');
-            }
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.text(); // You might not need to parse JSON in this case
+        })
+        .then(data => {
+          // Handle success response (optional)
+          console.log('Success:', data); 
+          successMessage.style.display = 'block';
+          form.reset(); 
         })
         .catch(error => {
-            errorMessage.style.display = 'block';
-            console.error('Error:', error);
+          errorMessage.style.display = 'block';
+          console.error('Error:', error);
         })
         .finally(() => {
-            // Re-enable button and hide loader
-            submitButton.disabled = false;
-            buttonText.style.display = 'inline';
-            buttonLoader.style.display = 'none';
+          // Re-enable button and hide loader
+          submitButton.disabled = false;
+          buttonText.style.display = 'inline';
+          buttonLoader.style.display = 'none';
         });
     });
-});
+  });
 // Parallax Effect for Background
 window.addEventListener('scroll', () => {
     const parallaxElements = document.querySelectorAll('.parallax');
