@@ -37,8 +37,7 @@
         <h2>About Me</h2>
         <div class="profile-section">
             <div class="profile-image-container">
-                <img src="https://raw.githubusercontent.com/No-man1234/portfolio/refs/heads/main/Noman.JPG"
-                    alt="Abdullah Al Noman" class="profile-image">
+                <img src="D:\code without context\New folder\Noman.JPG" alt="Abdullah Al Noman" class="profile-image">
             </div>
             <div class="profile-content">
                 <p>As a second-year BSCSE student at United International University, I combine theoretical knowledge
@@ -240,32 +239,23 @@
 
     <section id="contact">
         <h2>Get In Touch</h2>
-        <div class="success-message" id="successMessage" style="display: none;">
-          Message sent successfully! Thank you for getting in touch.
-        </div>
-        <div class="error-message" id="errorMessage" style="display: none;">
-          Failed to send message. Please try again.
-        </div>
-        <form class="contact-form" id="contactForm"> 
-          <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" id="name" name="name" required>
-          </div>
-          <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" required>
-          </div>
-          <div class="form-group">
-            <label for="message">Message</label>
-            <textarea id="message" name="message" rows="5" required></textarea>
-          </div>
-          <button type="submit" id="submitButton">
-            <span id="buttonText">Send Message</span>
-            <span id="buttonLoader" style="display: none;">Sending...</span>
-          </button>
+        <form class="contact-form" action="https://formspree.io/f/mnnnnzdy" method="POST">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="5" required></textarea>
+            </div>
+            <button type="submit">Send Message</button>
         </form>
-      </section>
-      
+    </section>
+
     <footer>
         <p>© 2024 Abdullah Al Noman. All rights reserved.</p>
     </footer>
