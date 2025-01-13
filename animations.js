@@ -126,7 +126,7 @@ const animateSkills = () => {
 window.addEventListener('load', () => {
     gsap.to('.loading', {
         opacity: 0,
-        duration: 1,
+        duration: 0.3,
         onComplete: () => {
             document.querySelector('.loading').style.display = 'none';
             
