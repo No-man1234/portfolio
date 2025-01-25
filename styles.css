@@ -193,6 +193,10 @@ section h2:hover::after {
 }
 
 .project-card {
+    cursor: pointer;
+}
+
+.project-card {
     background: white;
     border-radius: var(--border-radius);
     overflow: hidden;
@@ -361,8 +365,14 @@ section h2:hover::after {
 .knowledge-logo {
     width: 50px;
     height: 50px;
-    filter: invert(1);
+    filter: invert(1); /* Default to no inversion in light mode */
     transition: transform 0.3s ease;
+}
+
+@media (prefers-color-scheme: light) {
+    .knowledge-logo {
+        filter: invert(0); /* Invert colors in light mode */
+    }
 }
 
 .knowledge-item:hover .knowledge-logo {
@@ -585,6 +595,40 @@ footer p {
     animation: spin 1s linear infinite;
 }
 
+.success-message {
+    background-color: var(--success-color);
+    color: white;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+    display: none;
+    animation: fadeIn 0.5s ease-in;
+}
+
+.error-message {
+    background-color: var(--error-color);
+    color: white;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    margin-bottom: 1rem;
+    display: none;
+    animation: fadeIn 0.5s ease-in;
+}
+
+#buttonLoader {
+    display: none;
+}
+
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 @keyframes spin {
     100% { transform: rotate(360deg); }
 }
@@ -636,6 +680,11 @@ footer p {
 }
 
 /* Dark Mode Support */
+@media (prefers-color-scheme: light) {
+    header p {
+        color: #ffffff; /* Dark gray color for better readability in light mode */
+    }
+}
 @media (prefers-color-scheme: dark) {
     :root {
         --background-light: #1a1a1a;
@@ -648,6 +697,14 @@ footer p {
     .skill-category,
     .contact-form {
         background: var(--background-dark);
+    }
+    header {
+        color: white; /* Ensure header text is white in dark mode */
+    }
+    @media (prefers-color-scheme: light) {
+        header {
+            color: black; /* Make header text black in light mode */
+        }
     }
 
     nav {

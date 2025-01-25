@@ -126,7 +126,7 @@ const animateSkills = () => {
 window.addEventListener('load', () => {
     gsap.to('.loading', {
         opacity: 0,
-        duration: 0.3,
+        duration: 1,
         onComplete: () => {
             document.querySelector('.loading').style.display = 'none';
             
@@ -168,6 +168,65 @@ document.querySelectorAll('nav a').forEach(anchor => {
             behavior: 'smooth',
             top: section.offsetTop - 100
         });
+    });
+});
+// get in touch message form
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('contactForm');
+    const submitButton = document.getElementById('submitButton');
+    const buttonText = document.getElementById('buttonText');
+    const buttonLoader = document.getElementById('buttonLoader');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault(); // Prevent the default form submission
+
+        // Reset messages
+        successMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+
+        // Disable submit button and show loader
+        submitButton.disabled = true;
+        buttonText.style.display = 'none';
+        buttonLoader.style.display = 'inline';
+
+        // Collect form data
+        const formData = new FormData(form);
+
+        // Make the fetch request to Formspree
+        fetch('https://formspree.io/f/mnnnnzdy?json', { // Ensure correct Formspree endpoint
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+            },
+            body: formData,
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to submit');
+                }
+                return response.json(); // Parse JSON response
+            })
+            .then(data => {
+                if (data.ok) {
+                    // Display success message and reset form
+                    successMessage.style.display = 'block';
+                    form.reset();
+                } else {
+                    throw new Error('Form submission failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorMessage.style.display = 'block';
+            })
+            .finally(() => {
+                // Re-enable submit button and hide loader
+                submitButton.disabled = false;
+                buttonText.style.display = 'inline';
+                buttonLoader.style.display = 'none';
+            });
     });
 });
 
