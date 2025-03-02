@@ -1,73 +1,136 @@
-// Initialize GSAP
-gsap.registerPlugin(ScrollTrigger);
+// Initialize GSAP only if it's available
+if (typeof gsap !== 'undefined') {
+    gsap.registerPlugin(ScrollTrigger);
+}
 
-// Function to animate knowledge bars
+// Function to animate knowledge bars - critical functionality
 function animateKnowledgeBars() {
     const knowledgeBars = document.querySelectorAll('.knowledge-bar');
     
     knowledgeBars.forEach(bar => {
-        // Reset width to 0
+        // Get the progress value immediately
+        const progress = bar.getAttribute('data-progress');
+        
+        // Set initial width to 0
         bar.style.width = '0%';
         
+        // Use simple intersection observer
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
-                    // Get the progress value
-                    const progress = bar.getAttribute('data-progress');
-                    
-                    // Add a slight delay before starting the animation
+                    // Animate to the target width after a short delay
                     setTimeout(() => {
-                        // Animate to the target width
                         bar.style.width = `${progress}%`;
-                    }, 200);
+                    }, 100);
                     
-                    // Stop observing after animation
+                    // Stop observing after animation starts
                     observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.5 });
+        }, { threshold: 0.1 });
         
         // Start observing the bar's container
         observer.observe(bar.parentElement);
     });
 }
 
-// Make sure this runs when the page loads
-document.addEventListener('DOMContentLoaded', animateKnowledgeBars);
+// Simpler scroll handling for nav
+function handleNavScroll() {
+    const nav = document.querySelector('nav');
+    if (window.scrollY > 50) {
+        nav.classList.add('scrolled');
+    } else {
+        nav.classList.remove('scrolled');
+    }
+}
 
-// Also run it when the window loads (for safety)
-window.addEventListener('load', animateKnowledgeBars);
+// Simplified section visibility handler
+function setupSectionObserver() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+            }
+        });
+    }, { threshold: 0.1 });
 
-// Typing Effect
-const typed = new Typed('#typed-text', {
-    strings: [
-        'Software Developer',
-        'Problem Solver',
-        'Tech Enthusiast',
-        'UIU Student'
-    ],
-    typeSpeed: 50,
-    backSpeed: 30,
-    backDelay: 1000,
-    loop: true
-});
-
-// Scroll Progress Bar
-const createScrollProgress = () => {
-    const progress = document.createElement('div');
-    progress.className = 'scroll-progress';
-    document.body.appendChild(progress);
-
-    window.addEventListener('scroll', () => {
-        const height = document.documentElement.scrollHeight - window.innerHeight;
-        const scrolled = (window.pageYOffset / height) * 100;
-        progress.style.width = `${scrolled}%`;
+    document.querySelectorAll('section').forEach(section => {
+        observer.observe(section);
     });
-};
+}
 
-// 3D Card Effect
-const initializeCards = () => {
-    document.querySelectorAll('.project-card').forEach(card => {
+// Form handler - critical functionality
+function setupContactForm() {
+    const form = document.getElementById('contactForm');
+    if (!form) return;
+    
+    const submitButton = document.getElementById('submitButton');
+    const buttonText = document.getElementById('buttonText');
+    const buttonLoader = document.getElementById('buttonLoader');
+    const successMessage = document.getElementById('successMessage');
+    const errorMessage = document.getElementById('errorMessage');
+
+    form.addEventListener('submit', (event) => {
+        event.preventDefault();
+
+        successMessage.style.display = 'none';
+        errorMessage.style.display = 'none';
+
+        submitButton.disabled = true;
+        buttonText.style.display = 'none';
+        buttonLoader.style.display = 'inline';
+
+        const formData = new FormData(form);
+
+        fetch('https://formspree.io/f/mnnnnzdy', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+            },
+            body: formData,
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to submit');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.ok) {
+                    successMessage.style.display = 'block';
+                    form.reset();
+                } else {
+                    throw new Error('Form submission failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                errorMessage.style.display = 'block';
+            })
+            .finally(() => {
+                submitButton.disabled = false;
+                buttonText.style.display = 'inline';
+                buttonLoader.style.display = 'none';
+            });
+    });
+}
+
+// Smooth scroll for navigation - essential for UX
+function setupSmoothScroll() {
+    document.querySelectorAll('nav a').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const section = document.querySelector(this.getAttribute('href'));
+            section.scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+}
+
+// Initialize 3D card effect - but only after main content loads
+function initializeCards() {
+    const cards = document.querySelectorAll('.project-card');
+    
+    cards.forEach(card => {
         card.addEventListener('mousemove', (e) => {
             const rect = card.getBoundingClientRect();
             const x = e.clientX - rect.left;
@@ -86,206 +149,39 @@ const initializeCards = () => {
             card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
         });
     });
-};
+}
 
-// Magnetic Buttons
-const initializeMagneticButtons = () => {
-    document.querySelectorAll('button').forEach(button => {
-        button.addEventListener('mousemove', (e) => {
-            const rect = button.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-            
-            button.style.transform = `translate(${x/5}px, ${y/5}px)`;
-        });
-
-        button.addEventListener('mouseleave', () => {
-            button.style.transform = 'translate(0, 0)';
-        });
-    });
-};
-
-// Skills Progress Animation
-const animateSkills = () => {
-    gsap.utils.toArray('.skill-bar').forEach(bar => {
-        const progress = bar.getAttribute('data-progress');
-        
-        gsap.to(bar, {
-            scrollTrigger: {
-                trigger: bar,
-                start: 'top center+=100'
-            },
-            '--progress': `${progress}%`,
-            duration: 1.5,
-            ease: 'power2.out'
-        });
-    });
-};
-
-// Loading Animation
-window.addEventListener('load', () => {
-    gsap.to('.loading', {
-        opacity: 0,
-        duration: 1,
-        onComplete: () => {
-            document.querySelector('.loading').style.display = 'none';
-            
-            // Animate header content
-            gsap.from('.header-content', {
-                y: 100,
-                opacity: 0,
-                duration: 1.2,
-                ease: 'power4.out'
-            });
-            
-            // Initialize other features
-            createScrollProgress();
-            initializeCards();
-            initializeMagneticButtons();
-            animateSkills();
-            animateKnowledgeBars();
-            
-            // Initialize VanillaTilt for profile picture
-            if (document.querySelector('.profile-image-container')) {
-                VanillaTilt.init(document.querySelector('.profile-image-container'), {
-                    max: 25,
-                    speed: 400,
-                    glare: true,
-                    'max-glare': 0.5
-                });
-            }
-        }
-    });
-});
-
-// Smooth Scroll with Progress Indicator
-document.querySelectorAll('nav a').forEach(anchor => {
-    anchor.addEventListener('click', e => {
-        e.preventDefault();
-        const section = document.querySelector(anchor.getAttribute('href'));
-        
-        window.scrollTo({
-            behavior: 'smooth',
-            top: section.offsetTop - 100
-        });
-    });
-});
-// get in touch message form
+// Important: Improve loading sequence
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('contactForm');
-    const submitButton = document.getElementById('submitButton');
-    const buttonText = document.getElementById('buttonText');
-    const buttonLoader = document.getElementById('buttonLoader');
-    const successMessage = document.getElementById('successMessage');
-    const errorMessage = document.getElementById('errorMessage');
-
-    form.addEventListener('submit', (event) => {
-        event.preventDefault(); // Prevent the default form submission
-
-        // Reset messages
-        successMessage.style.display = 'none';
-        errorMessage.style.display = 'none';
-
-        // Disable submit button and show loader
-        submitButton.disabled = true;
-        buttonText.style.display = 'none';
-        buttonLoader.style.display = 'inline';
-
-        // Collect form data
-        const formData = new FormData(form);
-
-        // Make the fetch request to Formspree
-        fetch('https://formspree.io/f/mnnnnzdy?json', { // Ensure correct Formspree endpoint
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-            },
-            body: formData,
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to submit');
-                }
-                return response.json(); // Parse JSON response
-            })
-            .then(data => {
-                if (data.ok) {
-                    // Display success message and reset form
-                    successMessage.style.display = 'block';
-                    form.reset();
-                } else {
-                    throw new Error('Form submission failed');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                errorMessage.style.display = 'block';
-            })
-            .finally(() => {
-                // Re-enable submit button and hide loader
-                submitButton.disabled = false;
-                buttonText.style.display = 'inline';
-                buttonLoader.style.display = 'none';
-            });
-    });
-});
-
-// Parallax Effect for Background
-window.addEventListener('scroll', () => {
-    const parallaxElements = document.querySelectorAll('.parallax');
-    parallaxElements.forEach(element => {
-        const speed = element.getAttribute('data-speed') || 0.5;
-        const yPos = -(window.pageYOffset * speed);
-        element.style.transform = `translateY(${yPos}px)`;
-    });
-});
-
-// Initialize Intersection Observer for Section Animations
-const sectionObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.classList.add('visible');
-            
-            // Animate child elements
-            const elements = entry.target.querySelectorAll('.animate-on-scroll');
-            elements.forEach((el, i) => {
-                gsap.from(el, {
-                    y: 50,
-                    opacity: 0,
-                    duration: 0.8,
-                    delay: i * 0.2
-                });
-            });
+    // Hide loading screen as soon as DOM is ready
+    setTimeout(() => {
+        const loadingScreen = document.querySelector('.loading');
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
         }
-    });
-}, { threshold: 0.1 });
-
-document.querySelectorAll('section').forEach(section => {
-    sectionObserver.observe(section);
-});
-
-// Handle Navigation State
-let lastScroll = 0;
-window.addEventListener('scroll', () => {
-    const nav = document.querySelector('nav');
-    const currentScroll = window.pageYOffset;
+    }, 300); // Short timeout to ensure the page has rendered
     
-    if (currentScroll > lastScroll) {
-        nav.style.transform = 'translateY(-100%)';
-    } else {
-        nav.style.transform = 'translateY(0)';
-    }
-    
-    if (currentScroll > 50) {
-        nav.classList.add('scrolled');
-    } else {
-        nav.classList.remove('scrolled');
-    }
-    
-    lastScroll = currentScroll;
-});
-
-// Initialize everything when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
+    // Run critical functions immediately
+    handleNavScroll();
+    setupSectionObserver();
+    setupSmoothScroll();
+    setupContactForm();
     animateKnowledgeBars();
+    
+    // Defer non-critical animations
+    setTimeout(() => {
+        if (typeof VanillaTilt !== 'undefined' && document.querySelector('.profile-image-container')) {
+            VanillaTilt.init(document.querySelector('.profile-image-container'), {
+                max: 25,
+                speed: 400,
+                glare: true,
+                'max-glare': 0.5
+            });
+        }
+        
+        initializeCards();
+    }, 1000);
 });
+
+// Add scroll listener for navbar - needs to run on scroll
+window.addEventListener('scroll', handleNavScroll);
